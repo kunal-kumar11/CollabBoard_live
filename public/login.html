@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Realtime Whiteboard Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="./css/login.css">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+  <div class="wrapper">
+    <!-- Page Heading -->
+    <div class="page-header">
+      <h2>Welcome to CollabBoard</h2>
+      <p>Collaborative Real-Time Whiteboard</p>
+    </div>
+
+    <!-- Room Controls -->
+    <div class="container">
+
+      <!-- Create Room -->
+      <div class="box">
+        <h3>Create Room (Admin)</h3>
+        <input type="text" id="createName" placeholder="Your Name" required>
+        <input type="email" id="createEmail" placeholder="Your Email" required>
+        <input type="text" id="roomId" placeholder="Room ID" readonly>
+
+        <div class="actions">
+          <button onclick="generateRoomId()">Generate</button>
+          <button onclick="copyRoomId()">Copy</button>
+        </div>
+
+        <label style="margin-top: 5px; display: block;">
+          <input type="checkbox" id="isAdmin" checked disabled />
+          Admin (Only creator can save/delete images)
+        </label>
+
+        <button onclick="createRoom()">Create Room</button>
+      </div>
+
+      <!-- Join Room -->
+      <div class="box">
+        <h3>Join Room</h3>
+        <input type="text" id="joinName" placeholder="Your Name" required>
+        <input type="email" id="joinEmail" placeholder="Your Email" required>
+        <input type="text" id="joinRoomId" placeholder="Room ID">
+        <button onclick="joinRoom()">Join Room</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="/js/login.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CollabBoard - Collaborative Whiteboard</title>
+  <link rel="stylesheet" href="./css/index.css" />
+</head>
+<body>
+
+  <header>  
+    <h1>🖊️ CollabBoard </h1>
+     <button id="logoutBtn">🚪 Logout</button>
+  </header>
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <button id="clearBtn">🗑️ Clear</button>
+    <button id="undoBtn">↩️ Undo</button>
+    <button id="redoBtn">🔁 Redo</button>
+
+    <label for="colorPicker">Brush Color</label>
+    <input type="color" id="colorPicker" value="#000000" />
+
+    <label for="brushSize">Brush Size</label>
+    <input type="range" id="brushSize" min="1" max="20" value="3" />
+
+    <label for="bgColorPicker">Canvas Background</label>
+    <input type="color" id="bgColorPicker" title="Background Color" value="#ffffff" />
+
+    <select id="toolSelector">
+      <option value="pen">Pen</option>
+      <option value="line">Line</option>
+      <option value="rectangle">Rectangle</option>
+      <option value="circle">Circle</option>
+    </select>
+
+    <button id="downloadBtn">📥 Download</button>
+    <button id="saveBtn">💾 Save</button>
+  </div>
+
+  <!-- Workspace Layout -->
+  <main id="mainContent">
+    <aside id="userSection">
+      <h3>Users</h3>
+      <ul id="userList"></ul>
+    </aside>
+
+    <canvas id="canvas"></canvas>
+
+    <aside id="savedDrawings">
+      <h3>Saved Images</h3>
+      <div id="drawingList"></div>
+    </aside>
+
+  
+  </main>
+
+  <!-- Voice Controls -->
+  <div id="voiceControls">
+    <button id="joinVoiceBtn">🔊 Join Call</button>
+    <button id="muteVoiceBtn" style="display: none;">🔇 Mute</button>
+    <button id="leaveVoiceBtn" style="display: none;">❌ Leave</button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
+  <script src="./js/voice.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="/js/whiteboard.js"></script>
+
+</body>
+<script>document.getElementById("logoutBtn").addEventListener("click", () => {
+    
+    const check=confirm("Are you sure want to logout")
+    if(!check) return;
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("isAdmin");
+  localStorage.removeItem("email");
+  localStorage.removeItem("name");
+  localStorage.removeItem("roomId");
+
+  window.location.href = "/";
+});
+</script>
+</html>

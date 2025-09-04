@@ -78,7 +78,11 @@ socket.on("canvas-update", ({ roomId, json }) => {
   socket.on("redo", ({ dataUrl, roomId }) => {
     socket.to(roomId).emit("redo", { dataUrl });
   });
-
+     //Backend Snippet  
+  socket.on("mouse-move", ({ roomId, name, x, y }) => {
+    socket.to(roomId).emit("mouse-move", { name, x, y });
+  });
+  
   // Disconnect handler
   socket.on("disconnect", () => {
     for (let roomId in roomUsers) {
@@ -96,3 +100,4 @@ socket.on("canvas-update", ({ roomId, json }) => {
 server.listen(PORT, () =>
   console.log(`🚀 CollabBoard server running at http://localhost:${PORT}`)
 );
+

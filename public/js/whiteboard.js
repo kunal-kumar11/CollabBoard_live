@@ -353,7 +353,80 @@ socket.on("user-list", ({ users, adminId }) => {
   });
 });
 
+const cursorLayer = document.getElementById("cursorLayer");
+const cursors = {}; // store active cursors
+
+canvas.on("mouse:move", (e) => {
+  const pointer = canvas.getPointer(e.e);
+  socket.emit("mouse-move", {
+    roomId,
+    name,
+    x: pointer.x,
+    y: pointer.y
+  });
+});
+
+// Generate a unique color from a string (user name)
+function getColorFromName(name) {
+  let sum = 0;
+  for (let i = 0; i < name.length; i++) {
+    sum += name.charCodeAt(i);
+  }
+
+  const hue = sum % 360; // map into 0–359 range
+  return `hsl(${hue}, 70%, 50%)`;
+}
+
+socket.on("mouse-move", (data) => {
+  if (data.name === name) return; // Skip my own cursor
+
+  // Assign unique color based on name
+  if (!cursorColors[data.name]) {
+    cursorColors[data.name] = getColorFromName(data.name);
+  }
+  const color = cursorColors[data.name];
+
+  let cursor = cursors[data.name];
+  if (!cursor) {
+    cursor = document.createElement("div");
+    cursor.className = "remote-cursor";
+    cursor.style.position = "absolute";
+    cursor.style.pointerEvents = "none";
+    cursor.style.transition = "left 0.08s linear, top 0.08s linear"; // smooth move
+
+    cursor.innerHTML = `
+      <div style="
+        width:12px; height:12px; 
+        background:${color}; 
+        border-radius:50%; 
+        box-shadow:0 0 8px ${color}, 0 0 15px rgba(0,0,0,0.2);
+      "></div>
+      <span style="
+        font-size:50px; 
+        color:#fff; 
+        background:${color};
+        padding:3px 7px; 
+        border-radius:12px; 
+        position:absolute; 
+        top:-28px; 
+        left:14px; 
+        white-space:nowrap;
+        font-weight:500;
+        box-shadow:0 2px 6px rgba(0,0,0,0.2);
+      ">
+        ${data.name}
+      </span>
+    `;
+
+    cursorLayer.appendChild(cursor);
+    cursors[data.name] = cursor;
+  }
+
+  cursor.style.left = data.x + "px";
+  cursor.style.top = data.y + "px";
+});
 
 // ==== Initial State ====
 canvas.setBackgroundColor("#ffffff", canvas.renderAll.bind(canvas));
 saveState();
+

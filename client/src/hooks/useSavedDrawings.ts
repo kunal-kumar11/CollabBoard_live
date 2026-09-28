@@ -64,7 +64,9 @@ function useSavedDrawings({
     }
 
     const dataUrl =
-      canvas.toDataURL("image/png");
+      canvas.toDataURL({
+  format: "png",
+});
 
     try {
       await axios.post(

@@ -1,0 +1,334 @@
+/* ========================================
+   LOGIN PAGE
+======================================== */
+
+.login-page {
+  min-height: 100vh;
+
+  width: 100%;
+
+  background: linear-gradient(
+    to right,
+    #6a11cb,
+    #2575fc
+  );
+
+  color: #333;
+
+  padding: 100px 20px 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  /*
+    Allow the login page to scroll
+    when the content is taller than
+    the viewport.
+  */
+  overflow-x: hidden;
+
+  overflow-y: auto;
+}
+
+
+/* ========================================
+   WRAPPER
+======================================== */
+
+.login-page .wrapper {
+  width: 100%;
+
+  max-width: 1000px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+}
+
+
+/* ========================================
+   PAGE HEADER
+======================================== */
+
+.login-page .page-header {
+  text-align: center;
+
+  margin-bottom: 40px;
+}
+
+.login-page .page-header h2 {
+  font-size: 2rem;
+
+  font-weight: bold;
+
+  color: #fff;
+
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+
+/* ========================================
+   MAIN CONTAINER
+======================================== */
+
+.login-page .container {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 2rem;
+
+  background: rgba(255, 255, 255, 0.15);
+
+  backdrop-filter: blur(12px);
+
+  -webkit-backdrop-filter: blur(12px);
+
+  border-radius: 20px;
+
+  padding: 2.5rem;
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25);
+
+  width: 100%;
+}
+
+
+/* ========================================
+   CREATE / JOIN BOX
+======================================== */
+
+.login-page .box {
+  flex: 1;
+
+  background: rgba(255, 255, 255, 0.75);
+
+  border-radius: 16px;
+
+  padding: 2rem;
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+}
+
+.login-page .box h3 {
+  margin-bottom: 1rem;
+
+  color: #333;
+
+  font-size: 1.4rem;
+}
+
+
+/* ========================================
+   INPUTS
+======================================== */
+
+.login-page input {
+  width: 100%;
+
+  padding: 8px;
+
+  margin: 6px 0;
+
+  border: 1px solid #ccc;
+
+  border-radius: 6px;
+
+  font-size: 1rem;
+}
+
+.login-page input:focus {
+  outline: none;
+
+  border-color: #007bff;
+
+  box-shadow:
+    0 0 3px #007bff66;
+}
+
+.login-page input[type="text"] {
+  padding: 10px 12px;
+
+  margin-bottom: 1rem;
+
+  border-radius: 10px;
+
+  transition: border 0.3s;
+}
+
+.login-page input[type="text"]:focus {
+  border-color: #2575fc;
+
+  outline: none;
+}
+
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.login-page button {
+  padding: 10px 16px;
+
+  margin: 5px;
+
+  background-color: #2575fc;
+
+  color: #fff;
+
+  font-weight: bold;
+
+  border: none;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.3s ease;
+}
+
+.login-page button:hover {
+  background-color: #1e5fda;
+}
+
+
+/* ========================================
+   ACTION BUTTONS
+======================================== */
+
+.login-page .actions {
+  display: flex;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 1rem;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1024px) {
+  .login-page .container {
+    flex-direction: column;
+
+    padding: 2rem;
+
+    gap: 1.5rem;
+
+    max-width: 90%;
+  }
+
+  .login-page .box {
+    width: 100%;
+
+    padding: 1.8rem;
+  }
+
+  .login-page .page-header h2 {
+    font-size: 1.8rem;
+  }
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+  .login-page {
+    padding: 80px 10px 20px;
+  }
+
+  .login-page .container {
+    flex-direction: column;
+
+    padding: 1.5rem;
+
+    gap: 1rem;
+
+    box-shadow: none;
+
+    background: none;
+
+    backdrop-filter: none;
+  }
+
+  .login-page .box {
+    padding: 1.5rem 1.2rem;
+
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.9
+    );
+  }
+
+  .login-page input {
+    font-size: 0.95rem;
+  }
+
+  .login-page button {
+    font-size: 0.95rem;
+
+    padding: 8px 14px;
+  }
+
+  .login-page .page-header h2 {
+    font-size: 1.5rem;
+
+    padding: 0 1rem;
+  }
+}
+
+
+/* ========================================
+   VERY SMALL MOBILE
+======================================== */
+
+@media (max-width: 480px) {
+  .login-page .box h3 {
+    font-size: 1.2rem;
+  }
+
+  .login-page input {
+    font-size: 0.9rem;
+  }
+
+  .login-page button {
+    width: 100%;
+
+    padding: 10px;
+  }
+
+  .login-page .actions {
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+  .login-page .page-header h2 {
+    font-size: 1.3rem;
+  }
+}

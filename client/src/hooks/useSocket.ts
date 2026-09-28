@@ -164,7 +164,7 @@ function useSocket({
     // CREATE SOCKET
     // =============================
 
-    const socket = io();
+    const socket = io(import.meta.env.VITE_SERVER_URL);
 
     socketRef.current =
       socket;

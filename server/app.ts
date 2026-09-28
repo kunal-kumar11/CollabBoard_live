@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 import drawingsRoutes from "./routes/drawing";
 
@@ -13,25 +14,65 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const io = new Server(server);
+const PORT = Number(process.env.PORT) || 5000;
 
-const PORT = 5000;
+// =============================
+// MONGODB CONNECTION
+// =============================
+
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+  console.error("❌ MONGO_URI is not defined in environment variables.");
+  process.exit(1);
+}
 
 mongoose
-  .connect(process.env.MONGO_URI as string)
-  .then(() => console.log("MongoDB connected"))
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
   .catch((error) => {
-    console.error(
-      "MongoDB connection failed:",
-      error
-    );
+    console.error("❌ MongoDB connection failed:", error);
+    process.exit(1);
   });
+
+// =============================
+// CORS
+// =============================
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+
+// =============================
+// SOCKET.IO
+// =============================
+
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
+
+// =============================
+// BODY PARSER
+// =============================
 
 app.use(
   bodyParser.json({
     limit: "10mb",
   })
 );
+
+// =============================
+// DRAWING ROUTES
+// =============================
 
 app.use(
   "/api/drawings",
@@ -150,6 +191,7 @@ io.on("connection", (socket) => {
         ) {
           // Remove old cursor from
           // other connected users.
+
           socket
             .to(roomId)
             .emit(
@@ -160,12 +202,14 @@ io.on("connection", (socket) => {
             );
 
           // Remove old socket entry.
+
           roomUsers[roomId].delete(
             existingSocketId
           );
 
           // Remove old admin assignment
           // if necessary.
+
           if (
             roomAdmins[roomId] ===
             existingSocketId
@@ -209,7 +253,7 @@ io.on("connection", (socket) => {
         {
           json:
             roomCanvasState[
-              roomId
+            roomId
             ] ?? null,
         }
       );
@@ -380,12 +424,14 @@ io.on("connection", (socket) => {
       // This socket may already have
       // been removed because the same
       // user refreshed/reconnected.
+
       if (!currentUser) {
         continue;
       }
 
       // Remove this user's cursor
       // from other users.
+
       socket
         .to(roomId)
         .emit(
@@ -396,11 +442,13 @@ io.on("connection", (socket) => {
         );
 
       // Remove socket
+
       roomUsers[roomId].delete(
         socket.id
       );
 
       // Remove admin if necessary
+
       if (
         roomAdmins[roomId] ===
         socket.id
@@ -409,6 +457,7 @@ io.on("connection", (socket) => {
       }
 
       // Send updated user list
+
       io.to(roomId).emit(
         "user-list",
         {
@@ -453,8 +502,17 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
-  console.log(
-    `🚀 CollabBoard server running at http://localhost:${PORT}`
-  );
-});
+// =============================
+// START SERVER
+// =============================
+
+server.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
+    console.log(
+      `🚀 CollabBoard server running on port ${PORT}`
+    );
+  }
+);
+

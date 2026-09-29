@@ -46,6 +46,43 @@ function useUndoRedo({
   };
 
   // =========================
+  // CREATE DRAWING STATE
+  // =========================
+
+  const getDrawingState = (
+    canvas: fabric.Canvas
+  ): DrawingState => {
+    const canvasJSON =
+      canvas.toJSON();
+
+    return {
+      // IMPORTANT:
+      // Only objects are stored.
+      // Background is intentionally excluded.
+      objects:
+        canvasJSON.objects || [],
+    };
+  };
+
+  // =========================
+  // COMPARE DRAWING STATES
+  // =========================
+
+  const areDrawingStatesEqual = (
+    first: DrawingState | undefined,
+    second: DrawingState | undefined
+  ) => {
+    if (!first || !second) {
+      return false;
+    }
+
+    return (
+      JSON.stringify(first.objects) ===
+      JSON.stringify(second.objects)
+    );
+  };
+
+  // =========================
   // SAVE DRAWING STATE
   // =========================
 
@@ -61,16 +98,35 @@ function useUndoRedo({
       return;
     }
 
-    const canvasJSON =
-      canvas.toJSON();
+    const drawingState =
+      getDrawingState(canvas);
 
-    // IMPORTANT:
-    // Only store drawing objects.
-    // Background/settings are NOT
-    // part of undo/redo history.
-    const drawingState: DrawingState = {
-      objects: canvasJSON.objects || [],
-    };
+    const lastState =
+      stateStackRef.current[
+        stateStackRef.current.length - 1
+      ];
+
+    /*
+     * IMPORTANT:
+     *
+     * If only the background changed,
+     * the objects are identical.
+     *
+     * Therefore do NOT create another
+     * undo/redo history entry.
+     *
+     * This is important because
+     * Whiteboard.tsx currently calls
+     * saveState() after background changes.
+     */
+    if (
+      areDrawingStatesEqual(
+        lastState,
+        drawingState
+      )
+    ) {
+      return;
+    }
 
     stateStackRef.current.push(
       drawingState
@@ -104,15 +160,18 @@ function useUndoRedo({
     }
 
     /*
-     * Save the current background because
-     * background is NOT part of history.
+     * Background is NOT part of history.
+     *
+     * Therefore remember the current
+     * background before loading objects.
      */
     const currentBackground =
       canvas.backgroundColor;
 
     canvas.loadFromJSON(
       {
-        objects: drawingState.objects,
+        objects:
+          drawingState.objects,
       },
       () => {
         /*
@@ -157,7 +216,7 @@ function useUndoRedo({
 
     isRestoringRef.current = true;
 
-    // Remove current state
+    // Remove current drawing state
     const currentState =
       stateStackRef.current.pop();
 

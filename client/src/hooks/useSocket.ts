@@ -42,6 +42,10 @@ type CursorRemoveData = {
   id: string;
 };
 
+type DrawingState = {
+  objects: any[];
+};
+
 type UseSocketProps = {
   roomId: string | null;
   name: string | null;
@@ -164,10 +168,117 @@ function useSocket({
     // CREATE SOCKET
     // =============================
 
-    const socket = io(import.meta.env.VITE_SERVER_URL);
+    const socket = io(
+      import.meta.env.VITE_SERVER_URL
+    );
 
     socketRef.current =
       socket;
+
+    // =============================
+    // DRAWING STATE HELPER
+    // =============================
+
+    const getDrawingState = (): DrawingState => {
+      const canvasJSON =
+        canvas.toJSON();
+
+      return {
+        // IMPORTANT:
+        // Only objects are stored in
+        // undo/redo history.
+        //
+        // Background is intentionally
+        // excluded.
+        objects:
+          canvasJSON.objects || [],
+      };
+    };
+
+    // =============================
+    // COMPARE DRAWING STATES
+    // =============================
+
+    const areDrawingStatesEqual = (
+      first: DrawingState | undefined,
+      second: DrawingState | undefined
+    ) => {
+      if (!first || !second) {
+        return false;
+      }
+
+      return (
+        JSON.stringify(first.objects) ===
+        JSON.stringify(second.objects)
+      );
+    };
+
+    // =============================
+    // ADD REMOTE DRAWING TO HISTORY
+    // =============================
+
+    const saveRemoteDrawingState =
+      () => {
+        if (
+          !isAdminRef.current
+        ) {
+          return;
+        }
+
+        const drawingState =
+          getDrawingState();
+
+        const lastState =
+          stateStackRef.current[
+            stateStackRef.current.length - 1
+          ] as DrawingState | undefined;
+
+        /*
+         * IMPORTANT:
+         *
+         * If the remote update only
+         * changed the background,
+         * objects are unchanged.
+         *
+         * Therefore do NOT add a new
+         * undo/redo history entry.
+         */
+        if (
+          areDrawingStatesEqual(
+            lastState,
+            drawingState
+          )
+        ) {
+          updateUndoRedoButtons();
+          return;
+        }
+
+        /*
+         * A drawing/object actually
+         * changed.
+         *
+         * Add only the drawing objects
+         * to Admin's history.
+         */
+        stateStackRef.current.push(
+          drawingState
+        );
+
+        if (
+          stateStackRef.current
+            .length > 50
+        ) {
+          stateStackRef.current.shift();
+        }
+
+        /*
+         * A new remote drawing operation
+         * invalidates the redo chain.
+         */
+        redoStackRef.current = [];
+
+        updateUndoRedoButtons();
+      };
 
     // =============================
     // INITIAL CANVAS STATE
@@ -248,8 +359,11 @@ function useSocket({
 
     const saveInitialSyncedState =
       () => {
+        const drawingState =
+          getDrawingState();
+
         stateStackRef.current.push(
-          canvas.toJSON()
+          drawingState
         );
 
         if (
@@ -272,6 +386,18 @@ function useSocket({
     const handleCanvasUpdate = ({
       json,
     }: CanvasUpdate) => {
+      /*
+       * IMPORTANT:
+       *
+       * This update contains the COMPLETE
+       * synchronized canvas:
+       *
+       * - drawing objects
+       * - background color
+       *
+       * We load the complete canvas so
+       * everyone gets the background.
+       */
       isRestoringRef.current =
         true;
 
@@ -283,23 +409,17 @@ function useSocket({
           isRestoringRef.current =
             false;
 
-          if (
-            isAdminRef.current
-          ) {
-            stateStackRef.current.push(
-              canvas.toJSON()
-            );
-
-            if (
-              stateStackRef.current
-                .length > 50
-            ) {
-              stateStackRef.current.shift();
-            }
-
-            redoStackRef.current =
-              [];
-          }
+          /*
+           * IMPORTANT:
+           *
+           * Admin history receives ONLY
+           * drawing/object changes.
+           *
+           * Background changes are applied
+           * to the canvas but do NOT create
+           * an undo/redo history entry.
+           */
+          saveRemoteDrawingState();
 
           updateUndoRedoButtons();
         }

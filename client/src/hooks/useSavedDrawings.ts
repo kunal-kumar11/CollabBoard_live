@@ -32,7 +32,7 @@ function useSavedDrawings({
 
     try {
       const res = await axios.get(
-        "/api/drawings/admin/images",
+        `${import.meta.env.VITE_SERVER_URL}/api/drawings/admin/images`,
         {
           headers: {
             Authorization:

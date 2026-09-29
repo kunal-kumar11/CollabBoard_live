@@ -70,7 +70,7 @@ function useSavedDrawings({
 
     try {
       await axios.post(
-        "/api/drawings/save",
+        `${import.meta.env.VITE_SERVER_URL}/api/drawings/save`,
         {
           roomId,
           image: dataUrl,
@@ -115,7 +115,7 @@ function useSavedDrawings({
 
     try {
       await axios.delete(
-        `/api/drawings/delete/${id}`,
+        `${import.meta.env.VITE_SERVER_URL}/api/drawings/delete/${id}`,
         {
           headers: {
             Authorization:

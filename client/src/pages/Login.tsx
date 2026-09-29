@@ -44,7 +44,7 @@ function Login() {
     const isAdmin = true;
 
     try {
-      const res = await axios.post("/api/drawings/token", {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/drawings/token`, {
         email,
         name,
         isAdmin,
@@ -77,7 +77,7 @@ function Login() {
     const isAdmin = false;
 
     try {
-      const res = await axios.post("/api/drawings/token", {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/drawings/token`, {
         email,
         name,
         isAdmin,
